@@ -4,34 +4,47 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
-	"os"
 )
 
-
 type Event struct {
-	Type string    				`json: "type"`
-	Time time.Time 				`json: "time"`
-	Date map[string]interface{}  `json: "date"`
+	Type string                 `json: "type"`
+	Time time.Time              `json: "time"`
+	Date map[string]interface{} `json: "date"`
 }
 
-
 type Collector struct {
-	mu      sync.Mutex
-	file *	os.File
+	mu     sync.Mutex
+	file   *os.File
 	logger *log.Logger
-	closed 	bool
-} 
+	closed bool
+}
 
 func NewCollector(logger *log.Logger) *Collector {
-	f, err := os.OpenFile("events.jsonl", os.O_CREATE | os.O_APPEND | os.O_WRONLY, 0644)
-	
+
+	exePath, err := os.Executable()
+
+	if err != nil {
+		log.Fatalf("failed to get executable path: %v", err)
+	}
+	if err != nil {
+		logger.Fatal("Getwd:", err)
+	}
+
+	rootDir := filepath.Dir(filepath.Dir(filepath.Dir(exePath)))
+
+	filePath := filepath.Join(rootDir, "events/events.jsonl")
+
+	f, err := os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+
 	if err != nil {
 		logger.Fatal("Open events file:", err)
 	}
 
-	return &Collector {
+	return &Collector{
 		file:   f,
 		logger: logger,
 	}
@@ -39,21 +52,20 @@ func NewCollector(logger *log.Logger) *Collector {
 
 func (s *Collector) IngestEvent(e Event) {
 	s.mu.Lock()
-	
+
 	defer s.mu.Unlock()
 
 	if s.closed {
 		return
 	}
 
-	b, _:= json.Marshal(e)
+	b, _ := json.Marshal(e)
 	_, _ = s.file.Write(append(b, '\n'))
 
 	s.logger.Printf("Ingested: %s %s \n", e.Type, e.Date["path"])
 }
 
-
-func (s *Collector) Stop(ctx context.Context){
+func (s *Collector) Stop(ctx context.Context) {
 	s.mu.Lock()
 
 	defer s.mu.Unlock()

@@ -11,10 +11,13 @@ import (
 
 	"github.com/DeveloperAromal/GoNectar/internal/collector"
 	"github.com/DeveloperAromal/GoNectar/internal/config"
+	"github.com/DeveloperAromal/GoNectar/utils"
 	httptrap "github.com/DeveloperAromal/GoNectar/internal/trap"
+
 )
 
 func main() {
+	banner.Banner()
 	cfg := config.Config{
 		HTTPAddr: ":8080",
 	}
