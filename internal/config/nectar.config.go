@@ -1,6 +1,5 @@
 package config
 
-
-type config struct {
+type Config struct {
 	HTTPAddr string
 }
