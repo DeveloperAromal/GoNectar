@@ -33,7 +33,7 @@ func NewHTTPTrap(cfg *config.Config, col *collector.Collector, logger *log.Logge
 		col.IngestEvent(collector.Event{
 			Type: "http.request",
 			Time: time.Now().UTC(),
-			Date: map[string]interface{}{
+			Data: map[string]interface{}{
 				"method":  r.Method,
 				"path":    r.URL.Path,
 				"remote":  remote,
