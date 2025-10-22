@@ -62,12 +62,6 @@ go build -o bin/gonectar ./cmd/honeypot
 .\bin\gonectar.exe
 ```
 
-or
-
-```powershell
-.\bin\gonectar
-```
-
 4. Visit `http://localhost:8080/` or `http://localhost:8080/login` to generate events. Observe `events.jsonl` updating.
 
 Alternatively you can run directly with `go run`:
